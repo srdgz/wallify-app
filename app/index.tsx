@@ -28,15 +28,23 @@ const WelcomeScreen: React.FC = () => {
           end={{ x: 0.5, y: 0.8 }}
         />
         <View style={styles.contentContainer}>
-          <Text style={styles.title}>Wallify</Text>
-          <Text style={styles.punchline}>
+          <Animated.Text
+            entering={FadeInDown.delay(400).springify()}
+            style={styles.title}
+          >
+            Wallify
+          </Animated.Text>
+          <Animated.Text
+            entering={FadeInDown.delay(500).springify()}
+            style={styles.punchline}
+          >
             Transforma tu pantalla con los mejores fondos de Wallify
-          </Text>
-          <View>
+          </Animated.Text>
+          <Animated.View entering={FadeInDown.delay(600).springify()}>
             <Pressable style={styles.startButton}>
               <Text style={styles.startText}>Explorar</Text>
             </Pressable>
-          </View>
+          </Animated.View>
         </View>
       </Animated.View>
     </View>
