@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { View, Text, Pressable, StyleSheet, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -7,6 +7,7 @@ import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { ScrollView } from "react-native-gesture-handler";
 import Categories from "@/components/categories";
+import { apiCall, ApiResponse, ImageData } from "@/api";
 
 type Category = string | null;
 
@@ -15,6 +16,7 @@ const HomeScreen: React.FC = () => {
   const paddingTop = top > 0 ? top + 10 : 30;
   const searchInputRef = useRef<TextInput | null>(null);
   const [search, setSearch] = useState<string>("");
+  const [images, setImages] = useState<ImageData[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>(null);
 
   const clearSearch = () => {
@@ -28,7 +30,29 @@ const HomeScreen: React.FC = () => {
     setActiveCategory((prevCategory) => (prevCategory === cat ? null : cat));
   };
 
-  console.log("active category: ", activeCategory);
+  const fetchImages = async (
+    params: { page?: number } = { page: 1 },
+    append = true
+  ) => {
+    try {
+      const res: ApiResponse = await apiCall(params);
+
+      if (res.success && res.data?.hits) {
+        setImages((prevImages) => {
+          if (res.data && res.data.hits) {
+            return append ? [...prevImages, ...res.data.hits] : res.data.hits;
+          }
+          return prevImages;
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching images:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchImages();
+  }, []);
 
   return (
     <View style={[styles.container, { paddingTop }]}>
