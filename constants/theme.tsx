@@ -2,7 +2,7 @@ import { TextStyle } from "react-native";
 
 interface Colors {
   primary: string;
-  secundary: string;
+  secondary: string;
   background: string;
   primaryText: string;
   secondaryText: string;
@@ -35,7 +35,7 @@ interface Theme {
 export const theme: Theme = {
   colors: {
     primary: "#FF6F61",
-    secundary: "#6B4FBA",
+    secondary: "#6B4FBA",
     background: "#F5F5F5",
     primaryText: "#333333",
     secondaryText: "#757575",

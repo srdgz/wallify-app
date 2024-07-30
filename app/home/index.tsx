@@ -6,12 +6,16 @@ import { theme } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { ScrollView } from "react-native-gesture-handler";
+import Categories from "@/components/categories";
+
+type Category = string | null;
 
 const HomeScreen: React.FC = () => {
   const { top } = useSafeAreaInsets();
   const paddingTop = top > 0 ? top + 10 : 30;
-  const [search, setSearch] = useState("");
   const searchInputRef = useRef<TextInput | null>(null);
+  const [search, setSearch] = useState<string>("");
+  const [activeCategory, setActiveCategory] = useState<Category>(null);
 
   const clearSearch = () => {
     setSearch("");
@@ -19,6 +23,12 @@ const HomeScreen: React.FC = () => {
       searchInputRef.current.clear();
     }
   };
+
+  const handleChangeCategory = (cat: Category) => {
+    setActiveCategory((prevCategory) => (prevCategory === cat ? null : cat));
+  };
+
+  console.log("active category: ", activeCategory);
 
   return (
     <View style={[styles.container, { paddingTop }]}>
@@ -47,6 +57,12 @@ const HomeScreen: React.FC = () => {
               <CloseIcon />
             </Pressable>
           )}
+        </View>
+        <View style={styles.categories}>
+          <Categories
+            activeCategory={activeCategory}
+            handleChangeCategory={handleChangeCategory}
+          />
         </View>
       </ScrollView>
     </View>
@@ -96,4 +112,5 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: theme.radius.sm,
   },
+  categories: {},
 });
