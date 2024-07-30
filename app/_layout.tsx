@@ -11,6 +11,12 @@ const Layout: React.FC = () => {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="home"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 };
