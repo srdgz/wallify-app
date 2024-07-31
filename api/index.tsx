@@ -13,6 +13,8 @@ interface Params {
 export interface ImageData {
   id: number;
   webformatURL: string;
+  imageHeight: number;
+  imageWidth: number;
 }
 
 export interface ApiResponse {

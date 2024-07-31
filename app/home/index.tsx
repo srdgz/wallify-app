@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 
+import Categories from "@/components/categories";
+import ImageGrid from "@/components/imageGrid";
 import { View, Text, Pressable, StyleSheet, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { ScrollView } from "react-native-gesture-handler";
-import Categories from "@/components/categories";
 import { apiCall, ApiResponse, ImageData } from "@/api";
 
 type Category = string | null;
@@ -88,6 +89,7 @@ const HomeScreen: React.FC = () => {
             handleChangeCategory={handleChangeCategory}
           />
         </View>
+        <View>{images.length > 0 && <ImageGrid images={images} />}</View>
       </ScrollView>
     </View>
   );
