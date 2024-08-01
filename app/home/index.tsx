@@ -9,8 +9,9 @@ import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { ScrollView } from "react-native-gesture-handler";
 import { apiCall, ApiResponse, ImageData } from "@/api";
-import { debounce, stubFalse } from "lodash";
+import { debounce } from "lodash";
 import SkeletonLoader from "@/components/skeletonLoader";
+import Animated, { FadeInDown } from "react-native-reanimated";
 
 type Category = string | null;
 type Texting = string;
@@ -106,30 +107,34 @@ const HomeScreen: React.FC = () => {
           <FilterIcon />
         </Pressable>
       </View>
-      <ScrollView contentContainerStyle={{ gap: 15 }}>
-        <View style={styles.searchBar}>
-          <View style={styles.searchIcon}>
-            <SearchIcon />
-          </View>
-          <TextInput
-            placeholder="Busca tu foto..."
-            value={search}
-            ref={searchInputRef}
-            onChangeText={handleTextDebounce}
-            style={styles.searchInput}
-          />
-          {search && (
-            <Pressable style={styles.closeIcon} onPress={clearSearch}>
-              <CloseIcon />
-            </Pressable>
-          )}
+      <View style={styles.searchBar}>
+        <View style={styles.searchIcon}>
+          <SearchIcon />
         </View>
-        <View style={styles.categories}>
-          <Categories
-            activeCategory={activeCategory}
-            handleChangeCategory={handleChangeCategory}
-          />
-        </View>
+        <TextInput
+          placeholder="Busca tu foto..."
+          value={search}
+          ref={searchInputRef}
+          onChangeText={handleTextDebounce}
+          style={styles.searchInput}
+        />
+        {search && (
+          <Pressable style={styles.closeIcon} onPress={clearSearch}>
+            <CloseIcon />
+          </Pressable>
+        )}
+      </View>
+      <View style={styles.categories}>
+        <Categories
+          activeCategory={activeCategory}
+          handleChangeCategory={handleChangeCategory}
+        />
+      </View>
+      <Animated.ScrollView
+        contentContainerStyle={{ gap: 15 }}
+        entering={FadeInDown.duration(800)}
+        style={{ flex: 1 }}
+      >
         <View>
           {loading ? (
             <SkeletonLoader />
@@ -137,7 +142,7 @@ const HomeScreen: React.FC = () => {
             images.length > 0 && <ImageGrid images={images} />
           )}
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </View>
   );
 };
