@@ -10,6 +10,7 @@ import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { ScrollView } from "react-native-gesture-handler";
 import { apiCall, ApiResponse, ImageData } from "@/api";
 import { debounce, stubFalse } from "lodash";
+import SkeletonLoader from "@/components/skeletonLoader";
 
 type Category = string | null;
 type Texting = string;
@@ -28,11 +29,13 @@ const HomeScreen: React.FC = () => {
   const [images, setImages] = useState<ImageData[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>(null);
   const [page, setPage] = useState<number>(1);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const fetchImages = async (
     params: FetchImagesParams = { page: 1 },
     append = true
   ) => {
+    setLoading(true);
     try {
       const res: ApiResponse = await apiCall(params);
 
@@ -46,6 +49,8 @@ const HomeScreen: React.FC = () => {
       }
     } catch (error) {
       console.error("Error fetching images:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -125,7 +130,13 @@ const HomeScreen: React.FC = () => {
             handleChangeCategory={handleChangeCategory}
           />
         </View>
-        <View>{images.length > 0 && <ImageGrid images={images} />}</View>
+        <View>
+          {loading ? (
+            <SkeletonLoader />
+          ) : (
+            images.length > 0 && <ImageGrid images={images} />
+          )}
+        </View>
       </ScrollView>
     </View>
   );
