@@ -27,11 +27,10 @@ const HomeScreen: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [images, setImages] = useState<ImageData[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>(null);
-  const [page, setPage] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
 
   const fetchImages = async (
-    params: FetchImagesParams = { page: 1 },
+    params: FetchImagesParams = { page: 2 },
     append = true
   ) => {
     setLoading(true);
@@ -57,16 +56,15 @@ const HomeScreen: React.FC = () => {
     setSearch("");
     setImages([]);
     setActiveCategory(null);
-    fetchImages({ page: 1 }, false);
+    fetchImages({ page: 2 }, false);
   };
 
   const handleSearch = (text: Texting) => {
     setSearch(text);
     if (text.length > 2) {
-      setPage(1);
       setImages([]);
       setActiveCategory(null);
-      fetchImages({ page: 1, q: text }, false);
+      fetchImages({ page: 2, q: text }, false);
     } else if (text === "") {
       clearSearch();
     }
@@ -74,11 +72,10 @@ const HomeScreen: React.FC = () => {
 
   const handleChangeCategory = (cat: Category) => {
     clearSearch();
-    setPage(1);
     setImages([]);
     const newCategory = activeCategory === cat ? null : cat;
     setActiveCategory(newCategory);
-    fetchImages({ page: 1, category: newCategory }, false);
+    fetchImages({ page: 2, category: newCategory }, false);
   };
 
   useEffect(() => {
