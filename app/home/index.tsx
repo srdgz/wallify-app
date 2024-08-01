@@ -1,17 +1,15 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import Categories from "@/components/categories";
 import ImageGrid from "@/components/imageGrid";
+import SkeletonLoader from "@/components/skeletonLoader";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { View, Text, Pressable, StyleSheet, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
-import { ScrollView } from "react-native-gesture-handler";
 import { apiCall, ApiResponse, ImageData } from "@/api";
-import { debounce } from "lodash";
-import SkeletonLoader from "@/components/skeletonLoader";
-import Animated, { FadeInDown } from "react-native-reanimated";
 
 type Category = string | null;
 type Texting = string;
@@ -57,12 +55,9 @@ const HomeScreen: React.FC = () => {
 
   const clearSearch = () => {
     setSearch("");
-    if (searchInputRef.current) {
-      searchInputRef.current.clear();
-    }
     setImages([]);
     setActiveCategory(null);
-    fetchImages({ page }, false);
+    fetchImages({ page: 1 }, false);
   };
 
   const handleSearch = (text: Texting) => {
@@ -71,25 +66,18 @@ const HomeScreen: React.FC = () => {
       setPage(1);
       setImages([]);
       setActiveCategory(null);
-      fetchImages({ page, q: text }, false);
-    }
-    if (text == "") {
-      setPage(1);
-      searchInputRef?.current?.clear();
-      setImages([]);
-      setActiveCategory(null);
-      fetchImages({ page }, false);
+      fetchImages({ page: 1, q: text }, false);
+    } else if (text === "") {
+      clearSearch();
     }
   };
 
-  const handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
-
   const handleChangeCategory = (cat: Category) => {
+    clearSearch();
+    setPage(1);
+    setImages([]);
     const newCategory = activeCategory === cat ? null : cat;
     setActiveCategory(newCategory);
-    clearSearch();
-    setImages([]);
-    setPage(1);
     fetchImages({ page: 1, category: newCategory }, false);
   };
 
@@ -115,7 +103,7 @@ const HomeScreen: React.FC = () => {
           placeholder="Busca tu foto..."
           value={search}
           ref={searchInputRef}
-          onChangeText={handleTextDebounce}
+          onChangeText={handleSearch}
           style={styles.searchInput}
         />
         {search && (
