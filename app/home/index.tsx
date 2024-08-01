@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import Categories from "@/components/categories";
 import ImageGrid from "@/components/imageGrid";
@@ -9,8 +9,10 @@ import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { ScrollView } from "react-native-gesture-handler";
 import { apiCall, ApiResponse, ImageData } from "@/api";
+import { debounce } from "lodash";
 
 type Category = string | null;
+type Texting = string;
 
 const HomeScreen: React.FC = () => {
   const { top } = useSafeAreaInsets();
@@ -19,20 +21,10 @@ const HomeScreen: React.FC = () => {
   const [search, setSearch] = useState<string>("");
   const [images, setImages] = useState<ImageData[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>(null);
-
-  const clearSearch = () => {
-    setSearch("");
-    if (searchInputRef.current) {
-      searchInputRef.current.clear();
-    }
-  };
-
-  const handleChangeCategory = (cat: Category) => {
-    setActiveCategory((prevCategory) => (prevCategory === cat ? null : cat));
-  };
+  const [page, setPage] = useState<number>(1);
 
   const fetchImages = async (
-    params: { page?: number } = { page: 1 },
+    params: { page?: number; q?: string } = { page: 1 },
     append = true
   ) => {
     try {
@@ -49,6 +41,34 @@ const HomeScreen: React.FC = () => {
     } catch (error) {
       console.error("Error fetching images:", error);
     }
+  };
+
+  const clearSearch = () => {
+    setSearch("");
+    if (searchInputRef.current) {
+      searchInputRef.current.clear();
+    }
+  };
+
+  const handleSearch = (text: Texting) => {
+    setSearch(text);
+    if (text.length > 2) {
+      setPage(1);
+      setImages([]);
+      fetchImages({ page, q: text });
+    }
+    if (text == "") {
+      setPage(1);
+      searchInputRef?.current?.clear();
+      setImages([]);
+      fetchImages({ page });
+    }
+  };
+
+  const handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
+
+  const handleChangeCategory = (cat: Category) => {
+    setActiveCategory((prevCategory) => (prevCategory === cat ? null : cat));
   };
 
   useEffect(() => {
@@ -74,7 +94,7 @@ const HomeScreen: React.FC = () => {
             placeholder="Busca tu foto..."
             value={search}
             ref={searchInputRef}
-            onChangeText={(value) => setSearch(value)}
+            onChangeText={handleTextDebounce}
             style={styles.searchInput}
           />
           {search && (
