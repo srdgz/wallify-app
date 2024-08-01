@@ -9,10 +9,16 @@ import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { ScrollView } from "react-native-gesture-handler";
 import { apiCall, ApiResponse, ImageData } from "@/api";
-import { debounce } from "lodash";
+import { debounce, stubFalse } from "lodash";
 
 type Category = string | null;
 type Texting = string;
+
+interface FetchImagesParams {
+  page?: number;
+  q?: string;
+  category?: string | null;
+}
 
 const HomeScreen: React.FC = () => {
   const { top } = useSafeAreaInsets();
@@ -24,7 +30,7 @@ const HomeScreen: React.FC = () => {
   const [page, setPage] = useState<number>(1);
 
   const fetchImages = async (
-    params: { page?: number; q?: string } = { page: 1 },
+    params: FetchImagesParams = { page: 1 },
     append = true
   ) => {
     try {
@@ -48,6 +54,9 @@ const HomeScreen: React.FC = () => {
     if (searchInputRef.current) {
       searchInputRef.current.clear();
     }
+    setImages([]);
+    setActiveCategory(null);
+    fetchImages({ page }, false);
   };
 
   const handleSearch = (text: Texting) => {
@@ -55,20 +64,27 @@ const HomeScreen: React.FC = () => {
     if (text.length > 2) {
       setPage(1);
       setImages([]);
-      fetchImages({ page, q: text });
+      setActiveCategory(null);
+      fetchImages({ page, q: text }, false);
     }
     if (text == "") {
       setPage(1);
       searchInputRef?.current?.clear();
       setImages([]);
-      fetchImages({ page });
+      setActiveCategory(null);
+      fetchImages({ page }, false);
     }
   };
 
   const handleTextDebounce = useCallback(debounce(handleSearch, 400), []);
 
   const handleChangeCategory = (cat: Category) => {
-    setActiveCategory((prevCategory) => (prevCategory === cat ? null : cat));
+    const newCategory = activeCategory === cat ? null : cat;
+    setActiveCategory(newCategory);
+    clearSearch();
+    setImages([]);
+    setPage(1);
+    fetchImages({ page: 1, category: newCategory }, false);
   };
 
   useEffect(() => {
