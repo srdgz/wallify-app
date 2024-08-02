@@ -1,12 +1,7 @@
 import React from "react";
-import { theme } from "@/constants/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
-interface IconProps {
-  name?: string;
-  size?: number;
-  color?: string;
-}
+import { theme } from "@/constants/theme";
+import { IconProps } from "@/constants/types";
 
 export const FilterIcon: React.FC<IconProps> = () => (
   <Ionicons

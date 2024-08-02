@@ -1,9 +1,9 @@
 import React from "react";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { View, StyleSheet, Image, Pressable, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { hp, wp } from "../helpers/common";
 import { LinearGradient } from "expo-linear-gradient";
-import Animated, { FadeInDown } from "react-native-reanimated";
 import { theme } from "@/constants/theme";
 import { useRouter } from "expo-router";
 

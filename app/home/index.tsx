@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-
 import Categories from "@/components/categories";
 import ImageGrid from "@/components/imageGrid";
+import Loader from "@/components/loader";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -20,19 +20,16 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
-import { apiCall, ApiResponse, ImageData } from "@/api";
-import Loader from "@/components/loader";
+import { apiCall } from "@/api";
+import {
+  Category,
+  Texting,
+  FetchImagesParams,
+  ApiResponse,
+  ImageData,
+} from "@/constants/types";
 
 const iconPath = require("../../assets/images/wallify-logo.png");
-
-type Category = string | null;
-type Texting = string;
-
-interface FetchImagesParams {
-  page?: number;
-  q?: string;
-  category?: string | null;
-}
 
 const HomeScreen: React.FC = () => {
   const { top } = useSafeAreaInsets();

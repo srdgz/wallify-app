@@ -1,21 +1,10 @@
 import React from "react";
+import Animated, { FadeInRight } from "react-native-reanimated";
 import { FlatList, Text, StyleSheet, Pressable } from "react-native";
 import { data } from "@/constants/data";
 import { hp, wp } from "@/helpers/common";
 import { theme } from "@/constants/theme";
-import Animated, { FadeInRight } from "react-native-reanimated";
-
-interface CategoriesProps {
-  activeCategory: string | null;
-  handleChangeCategory: (category: string | null) => void;
-}
-
-interface CategoryItemProps {
-  title: string;
-  index: number;
-  isActive: boolean;
-  handleChangeCategory: (category: string | null) => void;
-}
+import { CategoriesProps, CategoryItemProps } from "@/constants/types";
 
 const Categories: React.FC<CategoriesProps> = ({
   activeCategory,

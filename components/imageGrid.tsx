@@ -3,11 +3,7 @@ import ImageCard from "./imageCard";
 import { View, StyleSheet, useWindowDimensions } from "react-native";
 import { MasonryFlashList } from "@shopify/flash-list";
 import { wp } from "@/helpers/common";
-import { ImageData } from "@/api";
-
-interface ImageGridProps {
-  images: ImageData[];
-}
+import { ImageGridProps } from "@/constants/types";
 
 const ImageGrid: React.FC<ImageGridProps> = ({ images }) => {
   const { width: deviceWidth, height: deviceHeight } = useWindowDimensions();

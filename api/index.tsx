@@ -1,29 +1,11 @@
 import Constants from "expo-constants";
+import { Params, ApiResponse } from "@/constants/types";
 
 const { pixabayApiKey } = Constants.expoConfig?.extra as {
   pixabayApiKey: string;
 };
 
 const apiUrl = `https://pixabay.com/api/?key=${pixabayApiKey}`;
-
-interface Params {
-  [key: string]: string | number;
-}
-
-export interface ImageData {
-  id: number;
-  webformatURL: string;
-  imageHeight: number;
-  imageWidth: number;
-}
-
-export interface ApiResponse {
-  success: boolean;
-  data?: {
-    hits: ImageData[];
-  };
-  msg?: string;
-}
 
 const formatUrl = (params?: Params): string => {
   let url = `${apiUrl}&per_page=25&safesearch=true&editors_choice=true`;

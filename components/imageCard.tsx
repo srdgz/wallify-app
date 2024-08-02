@@ -1,15 +1,9 @@
 import React from "react";
 import { StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
-import { ImageData } from "@/api";
 import { getImageSize, wp } from "@/helpers/common";
 import { theme } from "@/constants/theme";
-
-interface ImageCardProps {
-  item: ImageData;
-  index: number;
-  columns: number;
-}
+import { ImageCardProps } from "@/constants/types";
 
 const ImageCard: React.FC<ImageCardProps> = ({ item, index, columns }) => {
   const getImageHeight = () => {
