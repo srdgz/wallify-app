@@ -8,7 +8,7 @@ const { pixabayApiKey } = Constants.expoConfig?.extra as {
 const apiUrl = `https://pixabay.com/api/?key=${pixabayApiKey}`;
 
 const formatUrl = (params?: Params): string => {
-  let url = `${apiUrl}&per_page=25&safesearch=true&editors_choice=true`;
+  let url = `${apiUrl}&per_page=80&safesearch=true&editors_choice=true&lang=es`;
   if (!params) return url;
   Object.keys(params).forEach((key) => {
     const value = key === "q" ? encodeURIComponent(params[key]) : params[key];
