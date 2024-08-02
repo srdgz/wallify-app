@@ -1,5 +1,15 @@
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { ViewStyle } from "react-native";
+import { data } from "./data";
+
 export type Category = string | null;
+
 export type Texting = string;
+
+export type SectionViewProps = {
+  title: string;
+  content: React.ReactNode;
+};
 
 export interface Params {
   [key: string]: string | number;
@@ -24,6 +34,10 @@ export interface FetchImagesParams {
   page?: number;
   q?: string;
   category?: string | null;
+  order?: string[];
+  orientation?: string[];
+  type?: string[];
+  colors?: string[];
 }
 
 export interface CategoriesProps {
@@ -52,4 +66,43 @@ export interface ImageCardProps {
 
 export interface ImageGridProps {
   images: ImageData[];
+}
+
+export interface FiltersModalProps {
+  modalRef: React.RefObject<BottomSheetModal>;
+  filters: Filters;
+  setFilters: (filters: Filters) => void;
+  onClose: () => void;
+  onApply: () => void;
+  onReset: () => void;
+}
+
+export interface BottomSheetBackdropProps {
+  animatedIndex: unknown;
+  style: ViewStyle;
+}
+
+export interface Translations {
+  [key: string]: string;
+}
+
+export interface Filters {
+  order: string[];
+  orientation: string[];
+  type: string[];
+  colors: string[];
+}
+
+export interface FiltersTranslations {
+  order: Translations;
+  orientation: Translations;
+  type: Translations;
+  colors: Translations;
+  titles: Translations;
+}
+
+export interface CommomFiltersRowProps {
+  filterType: keyof typeof data.filters;
+  filters: Filters;
+  setFilters: (filters: Filters) => void;
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Categories from "@/components/categories";
 import ImageGrid from "@/components/imageGrid";
 import Loader from "@/components/loader";
+import FiltersModal from "@/components/filtersModal";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -27,9 +28,18 @@ import {
   FetchImagesParams,
   ApiResponse,
   ImageData,
+  Filters,
 } from "@/constants/types";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 
 const iconPath = require("../../assets/images/wallify-logo.png");
+
+const defaultFilters: Filters = {
+  order: [],
+  orientation: [],
+  type: [],
+  colors: [],
+};
 
 const HomeScreen: React.FC = () => {
   const { top } = useSafeAreaInsets();
@@ -39,6 +49,8 @@ const HomeScreen: React.FC = () => {
   const [images, setImages] = useState<ImageData[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const modalRef = useRef<BottomSheetModal>(null);
   const translateY = useSharedValue(0);
 
   const fetchImages = async (
@@ -48,7 +60,6 @@ const HomeScreen: React.FC = () => {
     setLoading(true);
     try {
       const res: ApiResponse = await apiCall(params);
-
       if (res.success && res.data?.hits) {
         setImages((prevImages) => {
           if (res.data && res.data.hits) {
@@ -77,9 +88,10 @@ const HomeScreen: React.FC = () => {
     if (text.length > 2) {
       setImages([]);
       setActiveCategory(null);
-      fetchImages({ page: 2, q: text }, false);
+      fetchImages({ page: 2, q: text, ...filters }, false);
     } else if (text === "") {
       clearSearch();
+      fetchImages({ page: 2, ...filters }, false);
     }
   };
 
@@ -88,7 +100,7 @@ const HomeScreen: React.FC = () => {
     setImages([]);
     const newCategory = activeCategory === cat ? null : cat;
     setActiveCategory(newCategory);
-    fetchImages({ page: 2, category: newCategory }, false);
+    fetchImages({ page: 2, category: newCategory, ...filters }, false);
   };
 
   const loaderAnimatedStyle = useAnimatedStyle(() => {
@@ -96,6 +108,38 @@ const HomeScreen: React.FC = () => {
       transform: [{ translateY: translateY.value }],
     };
   });
+
+  const openFiltersModal = () => {
+    modalRef?.current?.present();
+  };
+
+  const closeFiltersModal = () => {
+    modalRef?.current?.close();
+  };
+
+  const applyFilters = () => {
+    if (filters) {
+      const page = 1;
+      setImages([]);
+      let params: FetchImagesParams = {
+        page,
+        ...filters,
+      };
+      if (activeCategory) {
+        params.category = activeCategory;
+      }
+      if (search) {
+        params.q = search;
+      }
+      fetchImages(params, false);
+    }
+    closeFiltersModal();
+  };
+
+  const resetFilters = () => {
+    setFilters(defaultFilters);
+    fetchImages({ page: 2 }, false);
+  };
 
   useEffect(() => {
     fetchImages();
@@ -108,7 +152,7 @@ const HomeScreen: React.FC = () => {
           <Image source={iconPath} style={styles.icon} />
           <Text style={styles.title}>Wallify</Text>
         </Pressable>
-        <Pressable>
+        <Pressable onPress={openFiltersModal}>
           <FilterIcon />
         </Pressable>
       </View>
@@ -146,6 +190,14 @@ const HomeScreen: React.FC = () => {
           </ScrollView>
         )}
       </View>
+      <FiltersModal
+        modalRef={modalRef}
+        filters={filters}
+        setFilters={setFilters}
+        onClose={closeFiltersModal}
+        onApply={applyFilters}
+        onReset={resetFilters}
+      />
     </View>
   );
 };
