@@ -66,7 +66,6 @@ export const ColorFilter: React.FC<CommomFiltersRowProps> = ({
   setFilters,
 }) => {
   const filterOptions = data.filters[filterType];
-  const filterTranslations = data.filtersTranslations[filterType];
 
   const onSelect = (item: string) => {
     setFilters({

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import SectionView, { ColorFilter, CommomFiltersRow } from "./filtersViews";
 import Animated, {
   Extrapolation,
+  FadeInDown,
   interpolate,
   useAnimatedStyle,
 } from "react-native-reanimated";
@@ -38,14 +39,19 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
       <BottomSheetView style={styles.contentContainer}>
         <View style={styles.content}>
           <Text style={styles.filterText}>Filtros</Text>
-          {Object.keys(sections).map((sectionName) => {
+          {Object.keys(sections).map((sectionName, index) => {
             const SectionComponent = sections[sectionName];
             const translatedTitle =
               data.filtersTranslations.titles[
                 sectionName as keyof typeof data.filtersTranslations.titles
               ] || sectionName;
             return (
-              <View key={sectionName}>
+              <Animated.View
+                entering={FadeInDown.delay(index * 100 + 100)
+                  .springify()
+                  .damping(11)}
+                key={sectionName}
+              >
                 <SectionView
                   title={translatedTitle}
                   content={
@@ -56,10 +62,13 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
                     />
                   }
                 />
-              </View>
+              </Animated.View>
             );
           })}
-          <View style={styles.buttonContainer}>
+          <Animated.View
+            entering={FadeInDown.delay(500).springify().damping(11)}
+            style={styles.buttonContainer}
+          >
             <Pressable onPress={onReset} style={styles.resetButton}>
               <Text
                 style={[
@@ -75,7 +84,7 @@ const FiltersModal: React.FC<FiltersModalProps> = ({
                 Aplicar
               </Text>
             </Pressable>
-          </View>
+          </Animated.View>
         </View>
       </BottomSheetView>
     </BottomSheetModal>

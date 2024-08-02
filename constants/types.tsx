@@ -11,6 +11,8 @@ export type SectionViewProps = {
   content: React.ReactNode;
 };
 
+export type FilterKey = keyof Filters;
+
 export interface Params {
   [key: string]: string | number;
 }

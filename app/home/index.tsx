@@ -20,7 +20,12 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
-import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
+import {
+  ClearIcon,
+  CloseIcon,
+  FilterIcon,
+  SearchIcon,
+} from "@/components/icons";
 import { apiCall } from "@/api";
 import {
   Category,
@@ -29,8 +34,10 @@ import {
   ApiResponse,
   ImageData,
   Filters,
+  FilterKey,
 } from "@/constants/types";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { data } from "@/constants/data";
 
 const iconPath = require("../../assets/images/wallify-logo.png");
 
@@ -54,7 +61,7 @@ const HomeScreen: React.FC = () => {
   const translateY = useSharedValue(0);
 
   const fetchImages = async (
-    params: FetchImagesParams = { page: 2 },
+    params: FetchImagesParams = { page: 1 },
     append = true
   ) => {
     setLoading(true);
@@ -80,7 +87,7 @@ const HomeScreen: React.FC = () => {
     setSearch("");
     setImages([]);
     setActiveCategory(null);
-    fetchImages({ page: 2 }, false);
+    fetchImages({ page: 1, ...filters }, false);
   };
 
   const handleSearch = (text: Texting) => {
@@ -88,10 +95,10 @@ const HomeScreen: React.FC = () => {
     if (text.length > 2) {
       setImages([]);
       setActiveCategory(null);
-      fetchImages({ page: 2, q: text, ...filters }, false);
+      fetchImages({ page: 1, q: text, ...filters }, false);
     } else if (text === "") {
       clearSearch();
-      fetchImages({ page: 2, ...filters }, false);
+      fetchImages({ page: 1, ...filters }, false);
     }
   };
 
@@ -100,7 +107,7 @@ const HomeScreen: React.FC = () => {
     setImages([]);
     const newCategory = activeCategory === cat ? null : cat;
     setActiveCategory(newCategory);
-    fetchImages({ page: 2, category: newCategory, ...filters }, false);
+    fetchImages({ page: 1, category: newCategory, ...filters }, false);
   };
 
   const loaderAnimatedStyle = useAnimatedStyle(() => {
@@ -138,7 +145,30 @@ const HomeScreen: React.FC = () => {
 
   const resetFilters = () => {
     setFilters(defaultFilters);
-    fetchImages({ page: 2 }, false);
+    fetchImages({ page: 1 }, false);
+  };
+
+  const clearThisFilter = (filterKey: FilterKey) => {
+    const newFilters: Filters = { ...filters };
+    newFilters[filterKey] = [];
+    setFilters(newFilters);
+    const page = 1;
+    setImages([]);
+    let params: FetchImagesParams = {
+      page,
+      ...newFilters,
+    };
+    if (activeCategory) {
+      params.category = activeCategory;
+    }
+    if (search) {
+      params.q = search;
+    }
+    fetchImages(params, false);
+  };
+
+  const hasActiveFilters = () => {
+    return Object.values(filters).some((filterValue) => filterValue.length > 0);
   };
 
   useEffect(() => {
@@ -173,12 +203,57 @@ const HomeScreen: React.FC = () => {
           </Pressable>
         )}
       </View>
-      <View style={styles.categories}>
+      <View>
         <Categories
           activeCategory={activeCategory}
           handleChangeCategory={handleChangeCategory}
         />
       </View>
+      {hasActiveFilters() && (
+        <View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.filters}
+          >
+            {Object.keys(filters).map((key) => {
+              const filterKey = key as FilterKey;
+              const filterValue = filters[filterKey];
+              if (filterValue.length === 0) {
+                return null;
+              }
+              return (
+                <View key={key} style={styles.filterItem}>
+                  {key === "colors" ? (
+                    <View
+                      style={{
+                        height: 20,
+                        width: 30,
+                        borderRadius: 7,
+                        backgroundColor: filterValue[0],
+                      }}
+                    />
+                  ) : (
+                    <Text style={styles.filterItemText}>
+                      {filterValue
+                        .map(
+                          (value) => data.filtersTranslations[filterKey][value]
+                        )
+                        .join(", ")}
+                    </Text>
+                  )}
+                  <Pressable
+                    style={styles.filterCloseIcon}
+                    onPress={() => clearThisFilter(filterKey)}
+                  >
+                    <ClearIcon />
+                  </Pressable>
+                </View>
+              );
+            })}
+          </ScrollView>
+        </View>
+      )}
       <View style={styles.content}>
         {loading ? (
           <Animated.View style={[styles.loaderContainer, loaderAnimatedStyle]}>
@@ -254,7 +329,27 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: theme.radius.sm,
   },
-  categories: {},
+  filters: {
+    padding: wp(4),
+    gap: 10,
+  },
+  filterItem: {
+    padding: 3,
+    backgroundColor: theme.colors.border,
+    flexDirection: "row",
+    borderRadius: theme.radius.xs,
+    gap: 10,
+    paddingHorizontal: 10,
+    alignItems: "center",
+  },
+  filterItemText: {
+    fontSize: hp(1.9),
+  },
+  filterCloseIcon: {
+    backgroundColor: theme.colors.neutral(0.2),
+    padding: 4,
+    borderRadius: theme.radius.xs,
+  },
   content: {
     flex: 1,
   },

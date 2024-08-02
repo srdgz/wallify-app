@@ -22,3 +22,7 @@ export const CloseIcon: React.FC<IconProps> = () => (
     color={theme.colors.neutral(0.6)}
   />
 );
+
+export const ClearIcon: React.FC<IconProps> = () => (
+  <Ionicons name="close-outline" size={14} color={theme.colors.neutral(0.9)} />
+);
