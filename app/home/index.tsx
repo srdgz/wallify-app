@@ -2,14 +2,28 @@ import React, { useEffect, useRef, useState } from "react";
 
 import Categories from "@/components/categories";
 import ImageGrid from "@/components/imageGrid";
-import SkeletonLoader from "@/components/skeletonLoader";
-import Animated, { FadeInDown } from "react-native-reanimated";
-import { View, Text, Pressable, StyleSheet, TextInput } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  ScrollView,
+  Image,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { theme } from "@/constants/theme";
 import { hp, wp } from "@/helpers/common";
 import { CloseIcon, FilterIcon, SearchIcon } from "@/components/icons";
 import { apiCall, ApiResponse, ImageData } from "@/api";
+import Loader from "@/components/loader";
+
+const iconPath = require("../../assets/images/wallify-logo.png");
 
 type Category = string | null;
 type Texting = string;
@@ -28,6 +42,7 @@ const HomeScreen: React.FC = () => {
   const [images, setImages] = useState<ImageData[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const translateY = useSharedValue(0);
 
   const fetchImages = async (
     params: FetchImagesParams = { page: 2 },
@@ -49,6 +64,7 @@ const HomeScreen: React.FC = () => {
       console.error("Error fetching images:", error);
     } finally {
       setLoading(false);
+      translateY.value = withTiming(-1000, { duration: 600 });
     }
   };
 
@@ -78,6 +94,12 @@ const HomeScreen: React.FC = () => {
     fetchImages({ page: 2, category: newCategory }, false);
   };
 
+  const loaderAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: translateY.value }],
+    };
+  });
+
   useEffect(() => {
     fetchImages();
   }, []);
@@ -85,7 +107,8 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={[styles.container, { paddingTop }]}>
       <View style={styles.header}>
-        <Pressable>
+        <Pressable style={styles.titleContainer}>
+          <Image source={iconPath} style={styles.icon} />
           <Text style={styles.title}>Wallify</Text>
         </Pressable>
         <Pressable>
@@ -115,19 +138,17 @@ const HomeScreen: React.FC = () => {
           handleChangeCategory={handleChangeCategory}
         />
       </View>
-      <Animated.ScrollView
-        contentContainerStyle={{ gap: 15 }}
-        entering={FadeInDown.duration(800)}
-        style={{ flex: 1 }}
-      >
-        <View>
-          {loading ? (
-            <SkeletonLoader />
-          ) : (
-            images.length > 0 && <ImageGrid images={images} />
-          )}
-        </View>
-      </Animated.ScrollView>
+      <View style={styles.content}>
+        {loading ? (
+          <Animated.View style={[styles.loaderContainer, loaderAnimatedStyle]}>
+            <Loader />
+          </Animated.View>
+        ) : (
+          <ScrollView contentContainerStyle={{ gap: 15 }} style={{ flex: 1 }}>
+            <View>{images.length > 0 && <ImageGrid images={images} />}</View>
+          </ScrollView>
+        )}
+      </View>
     </View>
   );
 };
@@ -144,6 +165,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+  },
+  titleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    width: hp(4),
+    height: hp(4),
+    marginRight: 8,
   },
   title: {
     fontSize: hp(4),
@@ -176,4 +206,14 @@ const styles = StyleSheet.create({
     borderRadius: theme.radius.sm,
   },
   categories: {},
+  content: {
+    flex: 1,
+  },
+  loaderContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: theme.colors.background,
+    zIndex: 1,
+  },
 });

@@ -10,11 +10,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     slug: "wallify-app",
     version: "1.0.0",
     orientation: "portrait",
-    icon: "./assets/images/icon.png",
+    icon: "./assets/images/wallify-logo.png",
     scheme: "myapp",
     userInterfaceStyle: "automatic",
     splash: {
-      image: "./assets/images/splash.png",
+      image: "./assets/images/wallify-splash.png",
       resizeMode: "contain",
       backgroundColor: "#ffffff",
     },
@@ -24,14 +24,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     android: {
       package: "com.yourcompany.wallifyapp",
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
+        foregroundImage: "./assets/images/wallify-logo.png",
         backgroundColor: "#ffffff",
       },
     },
     web: {
       bundler: "metro",
       output: "static",
-      favicon: "./assets/images/favicon.png",
+      favicon: "./assets/images/wallify-logo.png",
     },
     plugins: ["expo-router"],
     experiments: {
