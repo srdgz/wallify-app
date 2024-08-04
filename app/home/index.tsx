@@ -6,7 +6,6 @@ import FiltersModal from "@/components/filtersModal";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withTiming,
 } from "react-native-reanimated";
 import {
   View,
@@ -51,13 +50,15 @@ const defaultFilters: Filters = {
 const HomeScreen: React.FC = () => {
   const { top } = useSafeAreaInsets();
   const paddingTop = top > 0 ? top + 10 : 30;
-  const searchInputRef = useRef<TextInput | null>(null);
   const [search, setSearch] = useState<string>("");
   const [images, setImages] = useState<ImageData[]>([]);
   const [activeCategory, setActiveCategory] = useState<Category>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const [isEndReached, setIsEndReached] = useState(false);
+  const searchInputRef = useRef<TextInput | null>(null);
   const modalRef = useRef<BottomSheetModal>(null);
+  const scrollRef = useRef<ScrollView>(null);
   const translateY = useSharedValue(0);
 
   const fetchImages = async (
@@ -68,18 +69,16 @@ const HomeScreen: React.FC = () => {
     try {
       const res: ApiResponse = await apiCall(params);
       if (res.success && res.data?.hits) {
-        setImages((prevImages) => {
-          if (res.data && res.data.hits) {
-            return append ? [...prevImages, ...res.data.hits] : res.data.hits;
-          }
-          return prevImages;
-        });
+        if (append) {
+          setImages([...images, ...res.data.hits]);
+        } else {
+          setImages([...res.data.hits]);
+        }
       }
     } catch (error) {
       console.error("Error fetching images:", error);
     } finally {
       setLoading(false);
-      translateY.value = withTiming(-1000, { duration: 600 });
     }
   };
 
@@ -171,6 +170,43 @@ const HomeScreen: React.FC = () => {
     return Object.values(filters).some((filterValue) => filterValue.length > 0);
   };
 
+  const handleScrollUp = () => {
+    scrollRef?.current?.scrollTo({
+      y: 0,
+      animated: true,
+    });
+  };
+
+  const handleScroll = (event: any) => {
+    const contentHeight = event.nativeEvent.contentSize.height;
+    const scrollViewHeight = event.nativeEvent.layoutMeasurement.height;
+    const scrollOffset = event.nativeEvent.contentOffset.y;
+    const bottomPosition = contentHeight - scrollViewHeight;
+
+    const threshold = 100;
+
+    if (scrollOffset >= bottomPosition - threshold) {
+      if (!isEndReached) {
+        setIsEndReached(true);
+        const page = 1;
+        const nextPage = page + 1;
+        let params: FetchImagesParams = {
+          page: nextPage,
+          ...filters,
+        };
+        if (activeCategory) {
+          params.category = activeCategory;
+        }
+        if (search) {
+          params.q = search;
+        }
+        fetchImages(params);
+      }
+    } else if (isEndReached) {
+      setIsEndReached(false);
+    }
+  };
+
   useEffect(() => {
     fetchImages();
   }, []);
@@ -178,7 +214,7 @@ const HomeScreen: React.FC = () => {
   return (
     <View style={[styles.container, { paddingTop }]}>
       <View style={styles.header}>
-        <Pressable style={styles.titleContainer}>
+        <Pressable style={styles.titleContainer} onPress={handleScrollUp}>
           <Image source={iconPath} style={styles.icon} />
           <Text style={styles.title}>Wallify</Text>
         </Pressable>
@@ -255,12 +291,18 @@ const HomeScreen: React.FC = () => {
         </View>
       )}
       <View style={styles.content}>
-        {loading ? (
+        {loading && !isEndReached ? (
           <Animated.View style={[styles.loaderContainer, loaderAnimatedStyle]}>
             <Loader />
           </Animated.View>
         ) : (
-          <ScrollView contentContainerStyle={{ gap: 15 }} style={{ flex: 1 }}>
+          <ScrollView
+            contentContainerStyle={{ gap: 15 }}
+            style={{ flex: 1 }}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            ref={scrollRef}
+          >
             <View>{images.length > 0 && <ImageGrid images={images} />}</View>
           </ScrollView>
         )}
