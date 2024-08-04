@@ -1,22 +1,30 @@
 import React, { useState } from "react";
-import { wp } from "@/helpers/common";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { hp, wp } from "@/helpers/common";
 import { BlurView } from "expo-blur";
 import {
   ActivityIndicator,
-  Button,
+  Alert,
   Platform,
+  Pressable,
   StyleSheet,
   View,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { theme } from "@/constants/theme";
+import { CloseIcon, DownloadIcon, ShareIcon } from "@/components/icons";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
 
 const ImageScreen: React.FC = () => {
   const [status, setStatus] = useState("");
   const router = useRouter();
   const item = useLocalSearchParams();
   let uri = item?.webformatURL;
+  const fileName = item?.previewURL?.split("/").pop();
+  const imageUrl = uri;
+  const filePath = `${FileSystem.documentDirectory}${fileName}`;
 
   const getSize = () => {
     const aspectRatio = Number(item?.imageWidth) / Number(item?.imageHeight);
@@ -37,6 +45,36 @@ const ImageScreen: React.FC = () => {
     setStatus("");
   };
 
+  const downloadFile = async () => {
+    try {
+      const { uri } = await FileSystem.downloadAsync(imageUrl, filePath);
+      setStatus("");
+      return uri;
+    } catch (error: unknown) {
+      console.error("Error: ", (error as Error).message);
+      setStatus("");
+      Alert.alert(
+        "Error",
+        "Hubo un error al descargar la imagen. Inténtalo más tarde."
+      );
+      return null;
+    }
+  };
+
+  const handleDownloadImage = async () => {
+    setStatus("downloading");
+    let uri = await downloadFile();
+    if (uri) console.log("image downloaded");
+  };
+
+  const handleShareImage = async () => {
+    setStatus("sharing");
+    let uri = await downloadFile();
+    if (uri) {
+      await Sharing.shareAsync(uri);
+    }
+  };
+
   return (
     <BlurView tint="dark" intensity={60} style={styles.container}>
       <View style={getSize()}>
@@ -52,7 +90,35 @@ const ImageScreen: React.FC = () => {
           onLoad={onLoad}
         />
       </View>
-      <Button title="Volver atrás" onPress={() => router.back()} />
+      <View style={styles.buttons}>
+        <Animated.View entering={FadeInDown.springify()}>
+          <Pressable style={styles.button} onPress={() => router.back()}>
+            <CloseIcon color="white" />
+          </Pressable>
+        </Animated.View>
+        <Animated.View entering={FadeInDown.springify().delay(100)}>
+          {status == "downloading" ? (
+            <View style={styles.button}>
+              <ActivityIndicator size="small" color="white" />
+            </View>
+          ) : (
+            <Pressable style={styles.button} onPress={handleDownloadImage}>
+              <DownloadIcon />
+            </Pressable>
+          )}
+        </Animated.View>
+        <Animated.View entering={FadeInDown.springify().delay(200)}>
+          {status == "sharing" ? (
+            <View style={styles.button}>
+              <ActivityIndicator size="small" color="white" />
+            </View>
+          ) : (
+            <Pressable style={styles.button} onPress={handleShareImage}>
+              <ShareIcon />
+            </Pressable>
+          )}
+        </Animated.View>
+      </View>
     </BlurView>
   );
 };
@@ -79,5 +145,20 @@ const styles = StyleSheet.create({
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
+  },
+  buttons: {
+    marginTop: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 50,
+  },
+  button: {
+    height: hp(6),
+    width: hp(6),
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderRadius: theme.radius.lg,
+    borderCurve: "continuous",
   },
 });
