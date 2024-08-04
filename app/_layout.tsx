@@ -22,6 +22,14 @@ const Layout: React.FC = () => {
                 headerShown: false,
               }}
             />
+            <Stack.Screen
+              name="home/image"
+              options={{
+                headerShown: false,
+                presentation: "transparentModal",
+                animation: "fade",
+              }}
+            />
           </Stack>
         </SafeAreaProvider>
       </BottomSheetModalProvider>

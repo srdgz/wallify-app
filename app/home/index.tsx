@@ -37,6 +37,7 @@ import {
 } from "@/constants/types";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { data } from "@/constants/data";
+import { useRouter } from "expo-router";
 
 const iconPath = require("../../assets/images/wallify-logo.png");
 
@@ -60,6 +61,7 @@ const HomeScreen: React.FC = () => {
   const modalRef = useRef<BottomSheetModal>(null);
   const scrollRef = useRef<ScrollView>(null);
   const translateY = useSharedValue(0);
+  const router = useRouter();
 
   const fetchImages = async (
     params: FetchImagesParams = { page: 1 },
@@ -303,7 +305,11 @@ const HomeScreen: React.FC = () => {
             scrollEventThrottle={16}
             ref={scrollRef}
           >
-            <View>{images.length > 0 && <ImageGrid images={images} />}</View>
+            <View>
+              {images.length > 0 && (
+                <ImageGrid images={images} router={router} />
+              )}
+            </View>
           </ScrollView>
         )}
       </View>

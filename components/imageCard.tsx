@@ -5,7 +5,12 @@ import { getImageSize, wp } from "@/helpers/common";
 import { theme } from "@/constants/theme";
 import { ImageCardProps } from "@/constants/types";
 
-const ImageCard: React.FC<ImageCardProps> = ({ item, index, columns }) => {
+const ImageCard: React.FC<ImageCardProps> = ({
+  item,
+  index,
+  columns,
+  router,
+}) => {
   const getImageHeight = () => {
     let { imageHeight: height, imageWidth: width } = item;
     return { height: getImageSize(height, width) };
@@ -16,7 +21,12 @@ const ImageCard: React.FC<ImageCardProps> = ({ item, index, columns }) => {
   };
 
   return (
-    <Pressable style={[styles.imageWrapper, !isLastInRow() && styles.spacing]}>
+    <Pressable
+      style={[styles.imageWrapper, !isLastInRow() && styles.spacing]}
+      onPress={() =>
+        router.push({ pathname: "home/image", params: { ...item } })
+      }
+    >
       <Image
         style={[styles.image, getImageHeight()]}
         source={item?.webformatURL}

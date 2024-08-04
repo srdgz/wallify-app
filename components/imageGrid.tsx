@@ -5,7 +5,7 @@ import { MasonryFlashList } from "@shopify/flash-list";
 import { wp } from "@/helpers/common";
 import { ImageGridProps } from "@/constants/types";
 
-const ImageGrid: React.FC<ImageGridProps> = ({ images }) => {
+const ImageGrid: React.FC<ImageGridProps> = ({ images, router }) => {
   const { width: deviceWidth, height: deviceHeight } = useWindowDimensions();
 
   const getColumnCount = (): number => {
@@ -27,7 +27,12 @@ const ImageGrid: React.FC<ImageGridProps> = ({ images }) => {
         numColumns={columns}
         contentContainerStyle={styles.listContainerStyle}
         renderItem={({ item, index }) => (
-          <ImageCard item={item} index={index} columns={columns} />
+          <ImageCard
+            item={item}
+            index={index}
+            columns={columns}
+            router={router}
+          />
         )}
         estimatedItemSize={200}
       />

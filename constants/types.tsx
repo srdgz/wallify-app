@@ -1,6 +1,9 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { ViewStyle } from "react-native";
 import { data } from "./data";
+import { router } from "expo-router";
+
+// const router = useRouter();
 
 export type Category = string | null;
 
@@ -64,10 +67,12 @@ export interface ImageCardProps {
   item: ImageData;
   index: number;
   columns: number;
+  router: typeof router;
 }
 
 export interface ImageGridProps {
   images: ImageData[];
+  router: typeof router;
 }
 
 export interface FiltersModalProps {
