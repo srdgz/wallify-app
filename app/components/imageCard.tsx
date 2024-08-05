@@ -1,9 +1,9 @@
 import React from "react";
 import { StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
-import { getImageSize, wp } from "@/helpers/common";
-import { theme } from "@/constants/theme";
-import { ImageCardProps } from "@/constants/types";
+import { getImageSize, wp } from "@/app/helpers/common";
+import { theme } from "@/app/constants/theme";
+import { ImageCardProps } from "@/app/constants/types";
 
 const ImageCard: React.FC<ImageCardProps> = ({
   item,

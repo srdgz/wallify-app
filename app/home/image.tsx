@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { hp, wp } from "@/helpers/common";
+import Toast from "react-native-toast-message";
+import { hp, wp } from "@/app/helpers/common";
 import { BlurView } from "expo-blur";
 import {
   ActivityIndicator,
@@ -9,11 +10,14 @@ import {
   Pressable,
   StyleSheet,
   View,
+  Text,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
-import { theme } from "@/constants/theme";
-import { CloseIcon, DownloadIcon, ShareIcon } from "@/components/icons";
+import { theme } from "@/app/constants/theme";
+import { CloseIcon, DownloadIcon, ShareIcon } from "@/app/components/icons";
+import { showToast } from "../toast/showToast";
+import { toastConfig } from "../toast/toastConfig";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 
@@ -22,9 +26,16 @@ const ImageScreen: React.FC = () => {
   const router = useRouter();
   const item = useLocalSearchParams();
   let uri = item?.webformatURL;
-  const fileName = item?.previewURL?.split("/").pop();
+  const previewURL = item?.previewURL;
+  const fileName =
+    typeof previewURL === "string" ? previewURL.split("/").pop() : undefined;
   const imageUrl = uri;
   const filePath = `${FileSystem.documentDirectory}${fileName}`;
+
+  if (!imageUrl || typeof imageUrl !== "string") {
+    Alert.alert("Error", "La URL de la imagen no es válida.");
+    return;
+  }
 
   const getSize = () => {
     const aspectRatio = Number(item?.imageWidth) / Number(item?.imageHeight);
@@ -62,16 +73,32 @@ const ImageScreen: React.FC = () => {
   };
 
   const handleDownloadImage = async () => {
-    setStatus("downloading");
-    let uri = await downloadFile();
-    if (uri) console.log("image downloaded");
+    if (Platform.OS == "web") {
+      const anchor = document.createElement("a");
+      anchor.href = imageUrl;
+      anchor.target = "_blank";
+      anchor.download = fileName || "download";
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+    } else {
+      setStatus("downloading");
+      let uri = await downloadFile();
+      if (uri) {
+        showToast({ message: "Imagen descargada" });
+      }
+    }
   };
 
   const handleShareImage = async () => {
-    setStatus("sharing");
-    let uri = await downloadFile();
-    if (uri) {
-      await Sharing.shareAsync(uri);
+    if (Platform.OS == "web") {
+      showToast({ message: "Link copiado" });
+    } else {
+      setStatus("sharing");
+      let uri = await downloadFile();
+      if (uri) {
+        await Sharing.shareAsync(uri);
+      }
     }
   };
 
@@ -119,6 +146,7 @@ const ImageScreen: React.FC = () => {
           )}
         </Animated.View>
       </View>
+      <Toast config={toastConfig} visibilityTime={2500} />
     </BlurView>
   );
 };

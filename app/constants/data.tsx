@@ -1,4 +1,4 @@
-import { Filters, FiltersTranslations } from "@/constants/types";
+import { Filters, FiltersTranslations } from "@/app/constants/types";
 
 const categories: string[] = [
   "fashion",

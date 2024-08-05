@@ -113,3 +113,7 @@ export interface CommomFiltersRowProps {
   filters: Filters;
   setFilters: (filters: Filters) => void;
 }
+
+export interface ToastProps {
+  message: string;
+}

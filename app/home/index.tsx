@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import Categories from "@/components/categories";
-import ImageGrid from "@/components/imageGrid";
-import Loader from "@/components/loader";
-import FiltersModal from "@/components/filtersModal";
+import Categories from "@/app/components/categories";
+import ImageGrid from "@/app/components/imageGrid";
+import Loader from "@/app/components/loader";
+import FiltersModal from "@/app/components/filtersModal";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -17,14 +17,14 @@ import {
   Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { theme } from "@/constants/theme";
-import { hp, wp } from "@/helpers/common";
+import { theme } from "@/app/constants/theme";
+import { hp, wp } from "@/app/helpers/common";
 import {
   ClearIcon,
   CloseIcon,
   FilterIcon,
   SearchIcon,
-} from "@/components/icons";
+} from "@/app/components/icons";
 import { apiCall } from "@/api";
 import {
   Category,
@@ -34,9 +34,9 @@ import {
   ImageData,
   Filters,
   FilterKey,
-} from "@/constants/types";
+} from "@/app/constants/types";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { data } from "@/constants/data";
+import { data } from "@/app/constants/data";
 import { useRouter } from "expo-router";
 
 const iconPath = require("../../assets/images/wallify-logo.png");

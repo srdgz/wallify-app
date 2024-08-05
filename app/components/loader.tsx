@@ -38,7 +38,7 @@ const Loader: React.FC = () => {
     <View style={styles.loaderContainer}>
       <Animated.View style={{ opacity, transform: [{ rotate }] }}>
         <Image
-          source={require("../assets/images/wallify-logo.png")}
+          source={require("../../assets/images/wallify-logo.png")}
           style={styles.logo}
         />
       </Animated.View>

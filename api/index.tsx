@@ -1,5 +1,5 @@
 import Constants from "expo-constants";
-import { Params, ApiResponse } from "@/constants/types";
+import { Params, ApiResponse } from "@/app/constants/types";
 
 const { pixabayApiKey } = Constants.expoConfig?.extra as {
   pixabayApiKey: string;

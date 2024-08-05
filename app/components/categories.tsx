@@ -1,10 +1,10 @@
 import React from "react";
 import Animated, { FadeInRight } from "react-native-reanimated";
 import { FlatList, Text, StyleSheet, Pressable } from "react-native";
-import { data } from "@/constants/data";
-import { hp, wp } from "@/helpers/common";
-import { theme } from "@/constants/theme";
-import { CategoriesProps, CategoryItemProps } from "@/constants/types";
+import { data } from "@/app/constants/data";
+import { hp, wp } from "@/app/helpers/common";
+import { theme } from "@/app/constants/theme";
+import { CategoriesProps, CategoryItemProps } from "@/app/constants/types";
 
 const Categories: React.FC<CategoriesProps> = ({
   activeCategory,

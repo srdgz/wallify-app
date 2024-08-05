@@ -12,11 +12,11 @@ import {
   BottomSheetBackdropProps,
 } from "@gorhom/bottom-sheet";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Filters, FiltersModalProps } from "@/constants/types";
+import { Filters, FiltersModalProps } from "@/app/constants/types";
 import { BlurView } from "expo-blur";
-import { theme } from "@/constants/theme";
-import { hp } from "@/helpers/common";
-import { data } from "@/constants/data";
+import { theme } from "@/app/constants/theme";
+import { hp } from "@/app/helpers/common";
+import { data } from "@/app/constants/data";
 
 const FiltersModal: React.FC<FiltersModalProps> = ({
   modalRef,

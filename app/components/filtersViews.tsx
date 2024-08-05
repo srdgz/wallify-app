@@ -1,9 +1,9 @@
 import React from "react";
-import { theme } from "@/constants/theme";
-import { SectionViewProps, CommomFiltersRowProps } from "@/constants/types";
-import { hp } from "@/helpers/common";
+import { theme } from "@/app/constants/theme";
+import { SectionViewProps, CommomFiltersRowProps } from "@/app/constants/types";
+import { hp } from "@/app/helpers/common";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { data } from "@/constants/data";
+import { data } from "@/app/constants/data";
 
 const SectionView: React.FC<SectionViewProps> = ({ title, content }) => {
   const translatedTitle =

@@ -6,7 +6,6 @@ interface Colors {
   background: string;
   primaryText: string;
   secondaryText: string;
-  buttons: string;
   white: string;
   border: string;
   neutral: (opacity: number) => string;
@@ -39,7 +38,6 @@ export const theme: Theme = {
     background: "#F5F5F5",
     primaryText: "#333333",
     secondaryText: "#757575",
-    buttons: "#FFC107",
     white: "#FFFFFF",
     border: "#E0E0E0",
     neutral: (opacity: number) => `rgba(10, 10, 10, ${opacity})`,
